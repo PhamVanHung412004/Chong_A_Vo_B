@@ -82,53 +82,96 @@
       margin-bottom: 30px; animation: fadeInUp 1s ease .5s both;
     }
     .envelope {
-      width: 280px; height: 190px; position: relative;
-      margin: 0 auto 30px; animation: floatEnv 3s ease-in-out infinite;
+      width: 300px; height: 200px; position: relative;
+      margin: 0 auto 30px;
+      animation: floatEnv 3s ease-in-out infinite;
+      perspective: 600px;
     }
-    @keyframes floatEnv { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+    @keyframes floatEnv { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+    /* Thân phong bì */
     .env-body {
       width: 100%; height: 100%;
-      background: linear-gradient(145deg, #f9f3e8, #f0e6cc);
-      border-radius: 4px 4px 8px 8px;
-      position: relative; overflow: visible;
-      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+      background: linear-gradient(160deg, #fdf6e8, #f0e2c0);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;          /* ẩn thư bên trong khi chưa mở */
+      box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 4px 12px rgba(0,0,0,.2);
     }
+
+    /* Đường gấp chéo trái & phải (trang trí mặt phong bì) */
+    .env-body::before,
+    .env-body::after {
+      content: '';
+      position: absolute; bottom: 0;
+      width: 0; height: 0;
+    }
+    .env-body::before {
+      left: 0;
+      border-left: 150px solid rgba(0,0,0,.06);
+      border-top: 100px solid transparent;
+    }
+    .env-body::after {
+      right: 0;
+      border-right: 150px solid rgba(0,0,0,.09);
+      border-top: 100px solid transparent;
+    }
+
+    /* Nắp phong bì – đóng = trỏ xuống, mở = lật lên */
     .env-flap {
       position: absolute; top: 0; left: 0; right: 0;
-      height: 95px;
-      clip-path: polygon(0 0, 50% 65%, 100% 0);
-      background: linear-gradient(160deg, #f5eddc, #e8d9b8);
+      height: 0;
+      border-left:  150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top:   105px solid #ead9af;
       transform-origin: top center;
-      transition: transform .6s ease;
-      z-index: 2;
+      transform-style: preserve-3d;
+      transition: transform .7s cubic-bezier(.4,0,.2,1);
+      z-index: 10;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,.15));
     }
-    .envelope.open .env-flap { transform: rotateX(180deg); }
-    .env-left {
-      position: absolute; bottom: 0; left: 0;
-      width: 50%; height: 100%;
-      clip-path: polygon(0 0, 100% 100%, 0 100%);
-      background: #e8d9b8;
+    /* Khi mở: lật nắp lên phía sau */
+    .envelope.open .env-flap {
+      transform: rotateX(-175deg);
     }
-    .env-right {
-      position: absolute; bottom: 0; right: 0;
-      width: 50%; height: 100%;
-      clip-path: polygon(0 100%, 100% 0, 100% 100%);
-      background: #ddd0a8;
-    }
+
+    /* Thư bên trong – ẩn hoàn toàn lúc đầu */
     .env-letter {
-      position: absolute; top: 20px; left: 50%;
-      transform: translateX(-50%) translateY(0);
-      width: 240px; background: #fff;
-      border-radius: 4px; padding: 16px;
+      position: absolute;
+      bottom: -10px;           /* bắt đầu dưới phong bì */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 250px;
+      background: #fff;
+      border-radius: 4px; padding: 18px 16px;
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,.2);
-      transition: transform .8s ease .3s;
-      z-index: 1;
+      box-shadow: 0 6px 24px rgba(0,0,0,.18);
+      opacity: 0;
+      transition: bottom .7s ease .35s, opacity .5s ease .35s;
+      z-index: 5;
     }
-    .envelope.open .env-letter { transform: translateX(-50%) translateY(-110px); }
+    /* Khi mở: thư trồi lên khỏi phong bì */
+    .envelope.open .env-letter {
+      bottom: 145px;
+      opacity: 1;
+    }
     .env-letter-content { font-family: 'Great Vibes', cursive; color: var(--gold); }
-    .env-letter-content .small { font-size: .9rem; color: #888; font-family: 'Montserrat', sans-serif; font-weight: 300; }
-    .env-letter-content .names { font-size: 1.4rem; color: var(--gold-dark); margin: 4px 0; }
+    .env-letter-content .small { font-size: .85rem; color: #999; font-family: 'Montserrat', sans-serif; font-weight: 300; }
+    .env-letter-content .names { font-size: 1.35rem; color: var(--gold-dark); margin: 6px 0; line-height: 1.4; }
+    /* Con dấu sáp ở giữa phong bì */
+    .env-seal {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px; height: 50px;
+      background: radial-gradient(circle, #c9a84c, #9a7a2e);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.4rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,.3);
+      transition: opacity .3s ease;
+      z-index: 9;
+    }
+    .envelope.open .env-seal { opacity: 0; }
     .open-btn {
       margin-top: 20px; padding: 14px 40px;
       background: transparent; border: 1px solid rgba(255,255,255,.4);
@@ -680,16 +723,15 @@
   <div class="envelope-wrap">
     <p>Bạn nhận được một thiệp mời đặc biệt</p>
     <div class="envelope" id="envelope">
-      <div class="env-body">
-        <div class="env-flap"></div>
-        <div class="env-left"></div>
-        <div class="env-right"></div>
-        <div class="env-letter">
-          <div class="env-letter-content">
-            <div class="small">Trân trọng kính mời</div>
-            <div class="names">Đức Mạnh<br/>&amp;<br/>Huyền Trang</div>
-          </div>
+      <div class="env-letter">
+        <div class="env-letter-content">
+          <div class="small">Trân trọng kính mời</div>
+          <div class="names">Đức Mạnh<br/>&amp;<br/>Huyền Trang</div>
         </div>
+      </div>
+      <div class="env-body">
+        <div class="env-seal">♥</div>
+        <div class="env-flap"></div>
       </div>
     </div>
     <button class="open-btn" id="open-btn">Mở Thiệp ✦</button>
